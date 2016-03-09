@@ -1,0 +1,3 @@
+cie = loadCIEData()
+CC_spectra = importdata('ColorChecker_380_780_5nm.txt')
+
