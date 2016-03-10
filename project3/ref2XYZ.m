@@ -1,3 +1,8 @@
+% Calculate xyz values for a single reference factor
+% With given cmf and illumination colum vectors. 
+
+%This can be used in conjunction with CalcXYZS to calculate a series of XYZ
+%values at once using an iterator. 
 function xyz = ref2XYZ( ref, cmf, illum )
     k = 100 / sum( illum.* cmf(:,2).* 10 );
     
