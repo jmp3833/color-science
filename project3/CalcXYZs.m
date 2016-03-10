@@ -13,6 +13,10 @@ numCols = sz(2);
 %For every matrix column, calculate it's XYZ values against 2 deg standard
 %observer in D65 light
 for col=1:(numCols)
-  disp(col);
   xyzs(:,col) = ref2XYZ(CC_delimited_spectra(:,col),cie.cmf2deg,cie.illD65);
 end
+
+%Show xyz values calculated form color chart
+disp(xyzs)
+
+XyYResults = XYZ2XyYMany(xyzs)

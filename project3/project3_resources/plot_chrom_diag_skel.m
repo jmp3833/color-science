@@ -5,7 +5,7 @@
 % 2/24/16 jaf
 
 % load the CIE observer and illuminant data
-cie = loadCIEdata;
+cie = loadCIEData;
 
 % create a new figure with hold on and line_width = 1.5
 figure;
@@ -35,8 +35,8 @@ set(gca, 'XMinorTick', 'on');
 set(gca, 'YMinorTick', 'on');
 
  % compute/plot the spectral locus
-locus = XYZ2xyY(cie.cmf2deg');
-plot(locus(1,[1:81,1]),locus(2,[1:81,1]), 'k-', 'LineWidth', line_weight);
+locus = XYZ2XyYMany(cie.cmf2deg');
+plot(locus(1,[1:81,1]),locus(2,[1:81,1]), 'k-', 'LineWidth', line_weight);  
 
 % draw the wavelength numbers
 l = [380 450 500 525 550 575 600 625 650 780];
@@ -65,3 +65,8 @@ plot(0.34567,0.35850,'ko','MarkerFaceColor','k');
 % A
 text(0.44757,0.40745+0.03,'A');
 plot(0.44757,0.40745,'ko','MarkerFaceColor','k');
+
+%Calc data for 
+
+% 16-1 real
+plot()

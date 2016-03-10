@@ -1,0 +1,692 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>loadCIEData</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-10"><meta name="DC.source" content="loadCIEData.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Load CIE Information from a series of provided text files.</span>
+<span class="comment">%Loads into a struct titled cie with 10 defined properties</span>
+
+<span class="comment">%Separate functions are defined to load either the first column</span>
+<span class="comment">%of a textfile (importLambda), the last three columns (importCMF),</span>
+<span class="comment">%the second column(importCData), or the final 12 columns (importIllF)</span>
+
+<span class="comment">%Authors: Team 14 (Jusitn &amp; Jenee)</span>
+
+<span class="keyword">function</span>[cie] = loadCIEData()
+
+cie.lambda = importLambda(<span class="string">'CIE_2Deg_380-780-5nm.txt'</span>)';
+
+cie.cmf2deg = importCMF(<span class="string">'CIE_2Deg_380-780-5nm.txt'</span>);
+cie.cmf10deg = importCMF(<span class="string">'CIE_10Deg_380-780-5nm.txt'</span>);
+cie.eigD = importCMF(<span class="string">'CIE_eigD_380-780-5nm.txt'</span>);
+
+cie.illA = importCData(<span class="string">'CIE_IllA_380-780-5nm.txt'</span>);
+cie.illC = importCData(<span class="string">'CIE_IllC_380-780-5nm.txt'</span>);
+cie.illD50 = importCData(<span class="string">'CIE_IllD50_380-780-5nm.txt'</span>);
+cie.illD65 = importCData(<span class="string">'CIE_IllD65_380-780-5nm.txt'</span>);
+
+cie.illF = importIllF(<span class="string">'CIE_IllF_1-12_380-780-5nm.txt'</span>);
+
+cie.illE = linspace(100,100,81)';
+
+<span class="comment">%Graph blackbody plot as noted in step 3</span>
+cla
+
+plot(cie.lambda,blackbody([2856,5003,6504],cie.lambda), cie.lambda, <span class="keyword">...</span>
+    (cie.illA ./100), <span class="string">'--'</span>, cie.lambda, (cie.illD50 ./ 100), <span class="string">'--'</span>,<span class="keyword">...</span>
+    cie.lambda,(cie.illD65 ./ 100), <span class="string">'--'</span>)
+title(<span class="string">'blackbody and standard illuminant spectra'</span>)
+axis([350 800 0 2.5])
+xlabel(<span class="string">'wavelength(nm)'</span>);
+ylabel(<span class="string">'relative power'</span>);
+legend(<span class="string">'blackbody 2856k'</span>, <span class="string">'blackbody 5003k'</span>, <span class="string">'blackbody 6504k'</span>,<span class="keyword">...</span>
+    <span class="string">'Illuminant A'</span>, <span class="string">'Illuminant D50'</span>, <span class="string">'Illuminant D65'</span>)
+
+<span class="comment">%Graph CMF plot as noted in step 3</span>
+cla
+
+plot(cie.lambda, cie.cmf10deg, <span class="string">'--'</span>, cie.lambda, cie.cmf2deg);
+title(<span class="string">'CIE Standard Observer CMFs'</span>)
+legend(<span class="string">'xbar 2deg'</span>, <span class="string">'ybar 2deg'</span>, <span class="string">'zbar 2deg'</span>, <span class="string">'xbar 10deg'</span>, <span class="string">'ybar 10deg'</span>, <span class="string">'zbar 10deg'</span>)
+xlabel(<span class="string">'wavelength(nm)'</span>);
+ylabel(<span class="string">'tristimulus values'</span>);
+
+<span class="comment">%Generate CIE struct</span>
+
+<span class="comment">%Import spectral data of all color patches into a matrix</span>
+CC_spectra = importdata(<span class="string">'ColorChecker_380_780_5nm.txt'</span>);
+
+<span class="comment">%Calculate the size of columns in the matrix to iterate over</span>
+CC_delimited_spectra = CC_spectra(:,2:25);
+sz = size(CC_delimited_spectra);
+numCols = sz(2);
+
+<span class="comment">%For every matrix column, calculate it's XYZ values against 2 deg standard</span>
+<span class="comment">%observer in D65 light</span>
+<span class="keyword">for</span> col=1:(numCols)
+  xyzs(:,col) = ref2XYZ(CC_delimited_spectra(:,col),cie.cmf2deg,cie.illD65);
+<span class="keyword">end</span>
+
+<span class="comment">%Show xyz values calculated form color chart</span>
+disp(xyzs)
+
+XyYResults = XYZ2XyYMany(xyzs)
+
+<span class="comment">% load the CIE observer and illuminant data</span>
+<span class="comment">% define ColorMunki/Argyll/spotread measurement wavelengths for the</span>
+<span class="comment">% normal and transmissive (-t) modes</span>
+
+<span class="comment">%Note: an alternative importSP script was created since our SP files were</span>
+<span class="comment">%stored in a different format.</span>
+
+<span class="comment">%Populate CIE Struct</span>
+
+
+cm_lams_norm = 410:10:730;
+cm_lams_trans = 380:10:730;
+
+<span class="comment">% define header offsets for reading the .sp files</span>
+cm_h_offset_norm = 54;
+cm_h_offset_trans = 57;
+
+<span class="comment">% load and normalize the measured spectral data for the patch #1</span>
+data = importSP(<span class="string">'161.sp'</span>);
+real_161 = data/100;
+data = importSP(<span class="string">'161-imaged.sp'</span>);
+imaged_161 = data/100;
+data = importSP(<span class="string">'161-created.sp'</span>);
+matching_161 = data/100;
+
+<span class="comment">% repeat the section above for patch #2</span>
+data = importSP(<span class="string">'162.sp'</span>);
+real_162 = data/100;
+data = importSP(<span class="string">'162-imaged.sp'</span>);
+imaged_162 = data/100;
+data = importSP(<span class="string">'162-created.sp'</span>);
+matching_162 = data/100;
+
+<span class="comment">%Interpolate XYZ calculated data</span>
+real161_interp = interp1(cm_lams_trans, real_161, cie.lambda(:),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+imaged161_interp = interp1(cm_lams_trans, imaged_161, cie.lambda(:),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+matching161_interp = interp1(cm_lams_trans, matching_161, cie.lambda(:),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+
+real162_interp = interp1(cm_lams_trans, real_162, cie.lambda(:),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+imaged162_interp = interp1(cm_lams_trans, imaged_162, cie.lambda(:),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+matching162_interp = interp1(cm_lams_trans, matching_162, cie.lambda(:),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+
+<span class="comment">%Slear open figure windows</span>
+clf()
+
+<span class="comment">%Graph patch of 16-1 for interpolated and regular measurement</span>
+hold <span class="string">on</span>
+plot(cie.lambda,real161_interp);
+plot(cie.lambda,imaged161_interp);
+plot(cie.lambda,matching161_interp);
+
+plot(cm_lams_trans,real_161, <span class="string">'-.*'</span>);
+plot(cm_lams_trans,imaged_161, <span class="string">'-.*'</span>);
+plot(cm_lams_trans,matching_161, <span class="string">'-.*'</span>);
+
+axis([350 800 0 1])
+xlabel(<span class="string">'wavelength(nm)'</span>)
+ylabel(<span class="string">'reflectance factor'</span>)
+
+legend(<span class="string">'real interpolated'</span>, <span class="string">'imaged interpolated'</span>, <span class="string">'matching interpolated'</span>,<span class="keyword">...</span>
+    <span class="string">'real measured'</span>, <span class="string">'imaged measured'</span>, <span class="string">'matching measured'</span>)
+
+title(<span class="string">'Patch 16.1: measured and interpolated spectra'</span>)
+set(gca,<span class="string">'fontsize'</span>, 18);
+
+figure()
+
+<span class="comment">%...And the same for patch 16.2</span>
+hold <span class="string">on</span>
+plot(cie.lambda,real162_interp);
+plot(cie.lambda,imaged162_interp);
+plot(cie.lambda,matching162_interp);
+
+plot(cm_lams_trans,real_162, <span class="string">'-.*'</span>);
+plot(cm_lams_trans,imaged_162, <span class="string">'-.*'</span>);
+plot(cm_lams_trans,matching_162, <span class="string">'-.*'</span>);
+
+axis([350 800 0 1])
+xlabel(<span class="string">'wavelength(nm)'</span>)
+ylabel(<span class="string">'reflectance factor'</span>)
+
+legend(<span class="string">'real interpolated'</span>, <span class="string">'imaged interpolated'</span>, <span class="string">'matching interpolated'</span>,<span class="keyword">...</span>
+    <span class="string">'real measured'</span>, <span class="string">'imaged measured'</span>, <span class="string">'matching measured'</span>)
+title(<span class="string">'Patch 16.2: measured and interpolated spectra'</span>)
+
+set(gca,<span class="string">'fontsize'</span>, 18);
+
+<span class="comment">%Calculate xyz values for real imaged and matching patches</span>
+xyz161RealCalc = ref2XYZ(real161_interp, cie.cmf2deg, cie.illD50);
+xyz161ImagedCalc = ref2XYZ(imaged161_interp, cie.cmf2deg, cie.illD50);
+xyz161MatchingCalc = ref2XYZ(matching161_interp, cie.cmf2deg, cie.illD50);
+xyz162RealCalc = ref2XYZ(real162_interp, cie.cmf2deg, cie.illD50);
+xyz162ImagedCalc = ref2XYZ(imaged162_interp, cie.cmf2deg, cie.illD50);
+xyz162MatchingCalc = ref2XYZ(matching162_interp, cie.cmf2deg, cie.illD50);
+
+<span class="comment">%Manual data entry for the measured XYZ values of real, imaged, and</span>
+<span class="comment">%patching swatches.</span>
+
+xyz161Real = [12.671117 9.367839  3.273952];
+xyz161Imaged = [27.885365 18.360140 5.827478];
+xyz161Matching = [9.108034  5.936318  0.878260];
+xyz162Real = [6.704818  5.610822  3.127515];
+xyz162Imaged = [7.878567  5.511291  2.580699];
+xyz162Matching = [2.648019  1.806134  0.354015];
+
+<span class="comment">%Calculate xyY values for measured and calculated XYZ values for both</span>
+<span class="comment">%patches</span>
+
+xyY161RealCalc = XYZ2xyY(xyz161RealCalc(1),xyz161RealCalc(2),xyz161RealCalc(3));
+xyY161ImagedCalc = XYZ2xyY(xyz161ImagedCalc(1),xyz161ImagedCalc(2),xyz161ImagedCalc(3));
+xyY161MatchingCalc = XYZ2xyY(xyz161MatchingCalc(1),xyz161MatchingCalc(2),xyz161MatchingCalc(3));
+xyY162RealCalc = XYZ2xyY(xyz162RealCalc(1),xyz162RealCalc(2),xyz162RealCalc(3));
+xyY162ImagedCalc = XYZ2xyY(xyz162ImagedCalc(1),xyz162ImagedCalc(2),xyz162ImagedCalc(3));
+xyY162MatchingCalc = XYZ2xyY(xyz162MatchingCalc(1),xyz162MatchingCalc(2),xyz162MatchingCalc(3));
+
+xyY161Real = XYZ2xyY(xyz161Real(1),xyz161Real(2),xyz161Real(3));
+xyY161Imaged = XYZ2xyY(xyz161Imaged(1),xyz161Imaged(2),xyz161Imaged(3));
+xyY161Matching = XYZ2xyY(xyz161Matching(1),xyz161Matching(2),xyz161Matching(3));
+xyY162Real = XYZ2xyY(xyz162Real(1),xyz162Real(2),xyz162Real(3));
+xyY162Imaged = XYZ2xyY(xyz162Imaged(1),xyz162Imaged(2),xyz162Imaged(3));
+xyY162Matching = XYZ2xyY(xyz162Matching(1),xyz162Matching(2),xyz162Matching(3));
+
+<span class="comment">% plot_chrom_diag_skel.m</span>
+<span class="comment">% plot the skeleton of the chromaticity diagram, with spectral locus and</span>
+<span class="comment">% major illuminants</span>
+<span class="comment">% requires a new blank figure and the loadCIEdata and XYZ2xyY functions</span>
+<span class="comment">% 2/24/16 jaf</span>
+
+<span class="comment">% load the CIE observer and illuminant data</span>
+
+<span class="comment">% create a new figure with hold on and line_width = 1.5</span>
+figure;
+hold <span class="string">on</span>;
+line_weight = 1.5;
+
+set(gca, <span class="string">'FontSize'</span>, 14);
+set(gca, <span class="string">'LineWidth'</span>, line_weight);
+axis(<span class="string">'equal'</span>); <span class="comment">% make plot scales equal</span>
+axis([0,0.9,0,0.9]); <span class="comment">% set the axis ranges</span>
+xlabel(<span class="string">'x'</span>);
+ylabel(<span class="string">'y'</span>);
+
+<span class="comment">% set the min and max for each axis of the plot</span>
+axis([0 0.9 0 0.9],<span class="string">'xy'</span>);
+
+<span class="comment">% force the tick spacing of the plot to be 0.3 on the X axis</span>
+set(gca, <span class="string">'XTick'</span>, 0:0.3:0.9);
+set(gca, <span class="string">'XTickLabel'</span>, [ 0:0.3:0.9 ] );
+
+<span class="comment">% force the tick spacing of the plot to be 0.3 on the Y axis</span>
+set(gca, <span class="string">'YTick'</span>,0:0.3:0.9);
+set(gca, <span class="string">'YTickLabel'</span>, [ 0:0.3:0.9 ] );
+
+<span class="comment">% set the minor ticks on the axis</span>
+set(gca, <span class="string">'XMinorTick'</span>, <span class="string">'on'</span>);
+set(gca, <span class="string">'YMinorTick'</span>, <span class="string">'on'</span>);
+
+ <span class="comment">% compute/plot the spectral locus</span>
+locus = XYZ2XyYMany(cie.cmf2deg');
+plot(locus(1,[1:81,1]),locus(2,[1:81,1]), <span class="string">'k-'</span>, <span class="string">'LineWidth'</span>, line_weight);
+
+<span class="comment">% draw the wavelength numbers</span>
+l = [380 450 500 525 550 575 600 625 650 780];
+<span class="keyword">for</span> j=1:size(l,2),
+     p = find(cie.lambda == l(j));
+     moveUp = 0.02;
+     <span class="keyword">if</span> l(j) == 450,
+         moveUp = 0.03;
+     <span class="keyword">end</span>
+     <span class="keyword">if</span> l(j) == 780,
+         moveUp = 0.0;
+     <span class="keyword">end</span>
+     text(locus(1,p)+.02,locus(2,p)+moveUp,num2str(l(j)));
+     plot(locus(1,p),locus(2,p),<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>);
+<span class="keyword">end</span>
+
+hold <span class="string">on</span>
+<span class="comment">% draw the major CIE illuminants</span>
+<span class="comment">% D65</span>
+text(0.31271-0.03,0.32902+0.03,<span class="string">'D65'</span>);
+plot(0.31271,0.32902,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>);
+
+<span class="comment">% D50</span>
+text(0.34567-0.03,0.35850+0.03,<span class="string">'D50'</span>);
+plot(0.34567,0.35850,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>);
+
+<span class="comment">% A</span>
+text(0.44757,0.40745+0.03,<span class="string">'A'</span>);
+plot(0.44757,0.40745,<span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>);
+
+<span class="comment">% Calculated values for swatches</span>
+l1 = plot(xyY161RealCalc(1),xyY161RealCalc(2), <span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
+l2 = plot(xyY161ImagedCalc(1),xyY161ImagedCalc(2), <span class="string">'g'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'y'</span>);
+l3 = plot(xyY161MatchingCalc(1),xyY161MatchingCalc(2), <span class="string">'c'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'m'</span>);
+l4 = plot(xyY162RealCalc(1),xyY162RealCalc(2), <span class="string">'ko'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'c'</span>);
+l5 = plot(xyY162ImagedCalc(1),xyY162ImagedCalc(2), <span class="string">'g'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
+l6 = plot(xyY162MatchingCalc(1),xyY162MatchingCalc(2), <span class="string">'c'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
+
+legend([l1 l2 l3 l4 l5 l6],{<span class="string">'16.1 real'</span>, <span class="string">'16.1 imaged'</span>, <span class="string">'16.1 matching'</span>,<span class="keyword">...</span>
+    <span class="string">'16.2 real'</span>, <span class="string">'16.2 imaged'</span>, <span class="string">'16.2 matching'</span>})
+
+<span class="comment">% Measured values for swatches</span>
+plot(xyY161Real(1),xyY161Real(2), <span class="string">'*'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>);
+plot(xyY161Imaged(1),xyY161Imaged(2), <span class="string">'*'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'y'</span>);
+plot(xyY161Matching(1),xyY161Matching(2), <span class="string">'*'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'m'</span>);
+plot(xyY162Real(1),xyY162Real(2), <span class="string">'*'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'c'</span>);
+plot(xyY162Imaged(1),xyY162Imaged(2), <span class="string">'*'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>);
+plot(xyY162Matching(1),xyY162Matching(2), <span class="string">'*'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>);
+</pre><pre class="codeoutput">  Columns 1 through 7
+
+   11.5145   39.1346   18.3488   11.1492   25.8437   31.7110   37.1457
+   10.3819   36.5981   19.6332   13.8551   24.3868   43.8600   29.5592
+    7.1502   27.0564   35.6470    7.4267   45.6142   44.8778    6.5006
+
+  Columns 8 through 14
+
+   13.8627   29.1328    8.5889   33.9174   46.1864    8.9183   15.0353
+   12.3179   19.8475    6.4569   44.1533   42.4957    6.4177   24.1079
+   39.3093   14.9941   15.4745   11.4297    8.6771   32.2736    9.6379
+
+  Columns 15 through 21
+
+   19.3447   55.8457   29.6768   14.4138   87.8402   57.9621   35.2286
+   11.3576   58.9726   19.3515   19.9750   92.3781   61.0426   37.0414
+    5.5526    9.6411   32.2626   39.0008   95.6125   65.4909   40.2256
+
+  Columns 22 through 24
+
+   19.3492    8.7646    3.2111
+   20.4708    9.2915    3.3763
+   22.1545   10.3188    3.9312
+
+
+XyYResults =
+
+  Columns 1 through 7
+
+    0.3964    0.3807    0.2492    0.3438    0.2696    0.2633    0.5074
+    0.3574    0.3561    0.2667    0.4272    0.2544    0.3641    0.4038
+   10.3819   36.5981   19.6332   13.8551   24.3868   43.8600   29.5592
+
+  Columns 8 through 14
+
+    0.2117    0.4554    0.2814    0.3790    0.4744    0.1873    0.3082
+    0.1881    0.3102    0.2116    0.4933    0.4365    0.1348    0.4942
+   12.3179   19.8475    6.4569   44.1533   42.4957    6.4177   24.1079
+
+  Columns 15 through 21
+
+    0.5336    0.4487    0.3651    0.1964    0.3185    0.3142    0.3132
+    0.3133    0.4738    0.2381    0.2722    0.3349    0.3309    0.3293
+   11.3576   58.9726   19.3515   19.9750   92.3781   61.0426   37.0414
+
+  Columns 22 through 24
+
+    0.3122    0.3089    0.3053
+    0.3303    0.3275    0.3210
+   20.4708    9.2915    3.3763
+
+
+ans = 
+
+      lambda: [1x81 double]
+     cmf2deg: [81x3 double]
+    cmf10deg: [81x3 double]
+        eigD: [81x3 double]
+        illA: [81x1 double]
+        illC: [81x1 double]
+      illD50: [81x1 double]
+      illD65: [81x1 double]
+        illF: [81x12 double]
+        illE: [81x1 double]
+
+</pre><img vspace="5" hspace="5" src="loadCIEData_01.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="loadCIEData_02.png" style="width:1440px;height:849px;" alt=""> <img vspace="5" hspace="5" src="loadCIEData_03.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%Load CIE Information from a series of provided text files.
+%Loads into a struct titled cie with 10 defined properties
+
+%Separate functions are defined to load either the first column
+%of a textfile (importLambda), the last three columns (importCMF),
+%the second column(importCData), or the final 12 columns (importIllF)
+
+%Authors: Team 14 (Jusitn & Jenee) 
+
+function[cie] = loadCIEData()
+
+cie.lambda = importLambda('CIE_2Deg_380-780-5nm.txt')';
+
+cie.cmf2deg = importCMF('CIE_2Deg_380-780-5nm.txt');
+cie.cmf10deg = importCMF('CIE_10Deg_380-780-5nm.txt');
+cie.eigD = importCMF('CIE_eigD_380-780-5nm.txt');
+
+cie.illA = importCData('CIE_IllA_380-780-5nm.txt');
+cie.illC = importCData('CIE_IllC_380-780-5nm.txt');
+cie.illD50 = importCData('CIE_IllD50_380-780-5nm.txt');
+cie.illD65 = importCData('CIE_IllD65_380-780-5nm.txt');
+
+cie.illF = importIllF('CIE_IllF_1-12_380-780-5nm.txt');
+
+cie.illE = linspace(100,100,81)';
+
+%Graph blackbody plot as noted in step 3
+cla
+
+plot(cie.lambda,blackbody([2856,5003,6504],cie.lambda), cie.lambda, ...
+    (cie.illA ./100), 'REPLACE_WITH_DASH_DASH', cie.lambda, (cie.illD50 ./ 100), 'REPLACE_WITH_DASH_DASH',...
+    cie.lambda,(cie.illD65 ./ 100), 'REPLACE_WITH_DASH_DASH')
+title('blackbody and standard illuminant spectra')
+axis([350 800 0 2.5])
+xlabel('wavelength(nm)');
+ylabel('relative power');
+legend('blackbody 2856k', 'blackbody 5003k', 'blackbody 6504k',...
+    'Illuminant A', 'Illuminant D50', 'Illuminant D65')
+
+%Graph CMF plot as noted in step 3
+cla
+
+plot(cie.lambda, cie.cmf10deg, 'REPLACE_WITH_DASH_DASH', cie.lambda, cie.cmf2deg);
+title('CIE Standard Observer CMFs')
+legend('xbar 2deg', 'ybar 2deg', 'zbar 2deg', 'xbar 10deg', 'ybar 10deg', 'zbar 10deg')
+xlabel('wavelength(nm)');
+ylabel('tristimulus values');
+
+%Generate CIE struct 
+
+%Import spectral data of all color patches into a matrix
+CC_spectra = importdata('ColorChecker_380_780_5nm.txt');
+
+%Calculate the size of columns in the matrix to iterate over
+CC_delimited_spectra = CC_spectra(:,2:25);
+sz = size(CC_delimited_spectra);
+numCols = sz(2);
+
+%For every matrix column, calculate it's XYZ values against 2 deg standard
+%observer in D65 light
+for col=1:(numCols)
+  xyzs(:,col) = ref2XYZ(CC_delimited_spectra(:,col),cie.cmf2deg,cie.illD65);
+end
+
+%Show xyz values calculated form color chart
+disp(xyzs)
+
+XyYResults = XYZ2XyYMany(xyzs)
+
+% load the CIE observer and illuminant data
+% define ColorMunki/Argyll/spotread measurement wavelengths for the
+% normal and transmissive (-t) modes
+
+%Note: an alternative importSP script was created since our SP files were
+%stored in a different format. 
+
+%Populate CIE Struct
+
+
+cm_lams_norm = 410:10:730;
+cm_lams_trans = 380:10:730;
+
+% define header offsets for reading the .sp files
+cm_h_offset_norm = 54;
+cm_h_offset_trans = 57;
+
+% load and normalize the measured spectral data for the patch #1
+data = importSP('161.sp');
+real_161 = data/100;
+data = importSP('161-imaged.sp');
+imaged_161 = data/100;
+data = importSP('161-created.sp');
+matching_161 = data/100;
+
+% repeat the section above for patch #2
+data = importSP('162.sp');
+real_162 = data/100;
+data = importSP('162-imaged.sp');
+imaged_162 = data/100;
+data = importSP('162-created.sp');
+matching_162 = data/100;
+
+%Interpolate XYZ calculated data 
+real161_interp = interp1(cm_lams_trans, real_161, cie.lambda(:),'linear','extrap');
+imaged161_interp = interp1(cm_lams_trans, imaged_161, cie.lambda(:),'linear','extrap');
+matching161_interp = interp1(cm_lams_trans, matching_161, cie.lambda(:),'linear','extrap');
+
+real162_interp = interp1(cm_lams_trans, real_162, cie.lambda(:),'linear','extrap');
+imaged162_interp = interp1(cm_lams_trans, imaged_162, cie.lambda(:),'linear','extrap');
+matching162_interp = interp1(cm_lams_trans, matching_162, cie.lambda(:),'linear','extrap');
+
+%Slear open figure windows
+clf()
+
+%Graph patch of 16-1 for interpolated and regular measurement
+hold on
+plot(cie.lambda,real161_interp);
+plot(cie.lambda,imaged161_interp);
+plot(cie.lambda,matching161_interp);
+
+plot(cm_lams_trans,real_161, '-.*');
+plot(cm_lams_trans,imaged_161, '-.*');
+plot(cm_lams_trans,matching_161, '-.*');
+
+axis([350 800 0 1])
+xlabel('wavelength(nm)')
+ylabel('reflectance factor')
+
+legend('real interpolated', 'imaged interpolated', 'matching interpolated',...
+    'real measured', 'imaged measured', 'matching measured')
+
+title('Patch 16.1: measured and interpolated spectra')
+set(gca,'fontsize', 18);
+
+figure()
+
+%...And the same for patch 16.2
+hold on
+plot(cie.lambda,real162_interp);
+plot(cie.lambda,imaged162_interp);
+plot(cie.lambda,matching162_interp);
+
+plot(cm_lams_trans,real_162, '-.*');
+plot(cm_lams_trans,imaged_162, '-.*');
+plot(cm_lams_trans,matching_162, '-.*');
+
+axis([350 800 0 1])
+xlabel('wavelength(nm)')
+ylabel('reflectance factor')
+
+legend('real interpolated', 'imaged interpolated', 'matching interpolated',...
+    'real measured', 'imaged measured', 'matching measured')
+title('Patch 16.2: measured and interpolated spectra')
+
+set(gca,'fontsize', 18);
+
+%Calculate xyz values for real imaged and matching patches
+xyz161RealCalc = ref2XYZ(real161_interp, cie.cmf2deg, cie.illD50);
+xyz161ImagedCalc = ref2XYZ(imaged161_interp, cie.cmf2deg, cie.illD50);
+xyz161MatchingCalc = ref2XYZ(matching161_interp, cie.cmf2deg, cie.illD50);
+xyz162RealCalc = ref2XYZ(real162_interp, cie.cmf2deg, cie.illD50);
+xyz162ImagedCalc = ref2XYZ(imaged162_interp, cie.cmf2deg, cie.illD50);
+xyz162MatchingCalc = ref2XYZ(matching162_interp, cie.cmf2deg, cie.illD50);
+
+%Manual data entry for the measured XYZ values of real, imaged, and
+%patching swatches.
+
+xyz161Real = [12.671117 9.367839  3.273952];
+xyz161Imaged = [27.885365 18.360140 5.827478];
+xyz161Matching = [9.108034  5.936318  0.878260]; 
+xyz162Real = [6.704818  5.610822  3.127515]; 
+xyz162Imaged = [7.878567  5.511291  2.580699];
+xyz162Matching = [2.648019  1.806134  0.354015];
+
+%Calculate xyY values for measured and calculated XYZ values for both
+%patches
+
+xyY161RealCalc = XYZ2xyY(xyz161RealCalc(1),xyz161RealCalc(2),xyz161RealCalc(3));
+xyY161ImagedCalc = XYZ2xyY(xyz161ImagedCalc(1),xyz161ImagedCalc(2),xyz161ImagedCalc(3));
+xyY161MatchingCalc = XYZ2xyY(xyz161MatchingCalc(1),xyz161MatchingCalc(2),xyz161MatchingCalc(3));
+xyY162RealCalc = XYZ2xyY(xyz162RealCalc(1),xyz162RealCalc(2),xyz162RealCalc(3));
+xyY162ImagedCalc = XYZ2xyY(xyz162ImagedCalc(1),xyz162ImagedCalc(2),xyz162ImagedCalc(3));
+xyY162MatchingCalc = XYZ2xyY(xyz162MatchingCalc(1),xyz162MatchingCalc(2),xyz162MatchingCalc(3));
+
+xyY161Real = XYZ2xyY(xyz161Real(1),xyz161Real(2),xyz161Real(3));
+xyY161Imaged = XYZ2xyY(xyz161Imaged(1),xyz161Imaged(2),xyz161Imaged(3));
+xyY161Matching = XYZ2xyY(xyz161Matching(1),xyz161Matching(2),xyz161Matching(3));
+xyY162Real = XYZ2xyY(xyz162Real(1),xyz162Real(2),xyz162Real(3));
+xyY162Imaged = XYZ2xyY(xyz162Imaged(1),xyz162Imaged(2),xyz162Imaged(3));
+xyY162Matching = XYZ2xyY(xyz162Matching(1),xyz162Matching(2),xyz162Matching(3));
+
+% plot_chrom_diag_skel.m
+% plot the skeleton of the chromaticity diagram, with spectral locus and
+% major illuminants
+% requires a new blank figure and the loadCIEdata and XYZ2xyY functions
+% 2/24/16 jaf
+
+% load the CIE observer and illuminant data
+
+% create a new figure with hold on and line_width = 1.5
+figure;
+hold on;
+line_weight = 1.5;
+
+set(gca, 'FontSize', 14);
+set(gca, 'LineWidth', line_weight);
+axis('equal'); % make plot scales equal
+axis([0,0.9,0,0.9]); % set the axis ranges
+xlabel('x');
+ylabel('y');
+
+% set the min and max for each axis of the plot
+axis([0 0.9 0 0.9],'xy');
+
+% force the tick spacing of the plot to be 0.3 on the X axis
+set(gca, 'XTick', 0:0.3:0.9);
+set(gca, 'XTickLabel', [ 0:0.3:0.9 ] );
+
+% force the tick spacing of the plot to be 0.3 on the Y axis
+set(gca, 'YTick',0:0.3:0.9);
+set(gca, 'YTickLabel', [ 0:0.3:0.9 ] );
+
+% set the minor ticks on the axis
+set(gca, 'XMinorTick', 'on');
+set(gca, 'YMinorTick', 'on');
+
+ % compute/plot the spectral locus
+locus = XYZ2XyYMany(cie.cmf2deg');
+plot(locus(1,[1:81,1]),locus(2,[1:81,1]), 'k-', 'LineWidth', line_weight);  
+
+% draw the wavelength numbers
+l = [380 450 500 525 550 575 600 625 650 780];
+for j=1:size(l,2),
+     p = find(cie.lambda == l(j));
+     moveUp = 0.02;
+     if l(j) == 450,
+         moveUp = 0.03;
+     end
+     if l(j) == 780,
+         moveUp = 0.0;
+     end
+     text(locus(1,p)+.02,locus(2,p)+moveUp,num2str(l(j)));
+     plot(locus(1,p),locus(2,p),'ko','MarkerFaceColor','k');
+end
+
+hold on
+% draw the major CIE illuminants
+% D65
+text(0.31271-0.03,0.32902+0.03,'D65');
+plot(0.31271,0.32902,'ko','MarkerFaceColor','k'); 
+
+% D50 
+text(0.34567-0.03,0.35850+0.03,'D50');
+plot(0.34567,0.35850,'ko','MarkerFaceColor','k');
+
+% A
+text(0.44757,0.40745+0.03,'A');
+plot(0.44757,0.40745,'ko','MarkerFaceColor','k');
+
+% Calculated values for swatches
+l1 = plot(xyY161RealCalc(1),xyY161RealCalc(2), 'ko','MarkerFaceColor','r');
+l2 = plot(xyY161ImagedCalc(1),xyY161ImagedCalc(2), 'g','MarkerFaceColor','y');
+l3 = plot(xyY161MatchingCalc(1),xyY161MatchingCalc(2), 'c','MarkerFaceColor','m');
+l4 = plot(xyY162RealCalc(1),xyY162RealCalc(2), 'ko','MarkerFaceColor','c');
+l5 = plot(xyY162ImagedCalc(1),xyY162ImagedCalc(2), 'g','MarkerFaceColor','b');
+l6 = plot(xyY162MatchingCalc(1),xyY162MatchingCalc(2), 'c','MarkerFaceColor','g');
+
+legend([l1 l2 l3 l4 l5 l6],{'16.1 real', '16.1 imaged', '16.1 matching',...
+    '16.2 real', '16.2 imaged', '16.2 matching'})
+
+% Measured values for swatches
+plot(xyY161Real(1),xyY161Real(2), '*','MarkerFaceColor','r');
+plot(xyY161Imaged(1),xyY161Imaged(2), '*','MarkerFaceColor','y');
+plot(xyY161Matching(1),xyY161Matching(2), '*','MarkerFaceColor','m');
+plot(xyY162Real(1),xyY162Real(2), '*','MarkerFaceColor','c');
+plot(xyY162Imaged(1),xyY162Imaged(2), '*','MarkerFaceColor','b');
+plot(xyY162Matching(1),xyY162Matching(2), '*','MarkerFaceColor','g');
+
+##### SOURCE END #####
+--></body></html>

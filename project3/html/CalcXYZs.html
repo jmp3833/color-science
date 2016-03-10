@@ -1,0 +1,166 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>CalcXYZs</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-09"><meta name="DC.source" content="CalcXYZs.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Generate CIE struct</span>
+cie = loadCIEData();
+
+<span class="comment">%Import spectral data of all color patches into a matrix</span>
+CC_spectra = importdata(<span class="string">'ColorChecker_380_780_5nm.txt'</span>);
+
+<span class="comment">%Calculate the size of columns in the matrix to iterate over</span>
+CC_delimited_spectra = CC_spectra(:,2:25);
+sz = size(CC_delimited_spectra);
+numCols = sz(2);
+
+<span class="comment">%For every matrix column, calculate it's XYZ values against 2 deg standard</span>
+<span class="comment">%observer in D65 light</span>
+<span class="keyword">for</span> col=1:(numCols)
+  xyzs(:,col) = ref2XYZ(CC_delimited_spectra(:,col),cie.cmf2deg,cie.illD65);
+<span class="keyword">end</span>
+
+<span class="comment">%Show xyz values calculated form color chart</span>
+disp(xyzs)
+
+XyYResults = XYZ2XyYMany(xyzs)
+</pre><pre class="codeoutput">  Columns 1 through 7
+
+   11.5145   39.1346   18.3488   11.1492   25.8437   31.7110   37.1457
+   10.3819   36.5981   19.6332   13.8551   24.3868   43.8600   29.5592
+    7.1502   27.0564   35.6470    7.4267   45.6142   44.8778    6.5006
+
+  Columns 8 through 14
+
+   13.8627   29.1328    8.5889   33.9174   46.1864    8.9183   15.0353
+   12.3179   19.8475    6.4569   44.1533   42.4957    6.4177   24.1079
+   39.3093   14.9941   15.4745   11.4297    8.6771   32.2736    9.6379
+
+  Columns 15 through 21
+
+   19.3447   55.8457   29.6768   14.4138   87.8402   57.9621   35.2286
+   11.3576   58.9726   19.3515   19.9750   92.3781   61.0426   37.0414
+    5.5526    9.6411   32.2626   39.0008   95.6125   65.4909   40.2256
+
+  Columns 22 through 24
+
+   19.3492    8.7646    3.2111
+   20.4708    9.2915    3.3763
+   22.1545   10.3188    3.9312
+
+
+XyYResults =
+
+  Columns 1 through 7
+
+    0.3964    0.3807    0.2492    0.3438    0.2696    0.2633    0.5074
+    0.3574    0.3561    0.2667    0.4272    0.2544    0.3641    0.4038
+   10.3819   36.5981   19.6332   13.8551   24.3868   43.8600   29.5592
+
+  Columns 8 through 14
+
+    0.2117    0.4554    0.2814    0.3790    0.4744    0.1873    0.3082
+    0.1881    0.3102    0.2116    0.4933    0.4365    0.1348    0.4942
+   12.3179   19.8475    6.4569   44.1533   42.4957    6.4177   24.1079
+
+  Columns 15 through 21
+
+    0.5336    0.4487    0.3651    0.1964    0.3185    0.3142    0.3132
+    0.3133    0.4738    0.2381    0.2722    0.3349    0.3309    0.3293
+   11.3576   58.9726   19.3515   19.9750   92.3781   61.0426   37.0414
+
+  Columns 22 through 24
+
+    0.3122    0.3089    0.3053
+    0.3303    0.3275    0.3210
+   20.4708    9.2915    3.3763
+
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+%Generate CIE struct 
+cie = loadCIEData();
+
+%Import spectral data of all color patches into a matrix
+CC_spectra = importdata('ColorChecker_380_780_5nm.txt');
+
+%Calculate the size of columns in the matrix to iterate over
+CC_delimited_spectra = CC_spectra(:,2:25);
+sz = size(CC_delimited_spectra);
+numCols = sz(2);
+
+%For every matrix column, calculate it's XYZ values against 2 deg standard
+%observer in D65 light
+for col=1:(numCols)
+  xyzs(:,col) = ref2XYZ(CC_delimited_spectra(:,col),cie.cmf2deg,cie.illD65);
+end
+
+%Show xyz values calculated form color chart
+disp(xyzs)
+
+XyYResults = XYZ2XyYMany(xyzs)
+##### SOURCE END #####
+--></body></html>
