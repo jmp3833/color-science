@@ -22,4 +22,4 @@ cie.illD65 = importCData('CIE_IllD65_380-780-5nm.txt');
 
 cie.illF = importIllF('CIE_IllF_1-12_380-780-5nm.txt');
 
-cie.illE = linspace(100,100,81)';
+cie.illE = linspace(1,1,81)';
