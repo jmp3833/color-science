@@ -1,3 +1,4 @@
+%% Calculation of Lab Values for ColorChecker Charts
 %Script to calculate XYZ and LAB values for color checker chart under 2deg
 %standard observer and D65 light source. Format into a text table fr pretty
 %printing with color chart names
@@ -76,3 +77,6 @@ for col = 1:(numCols)
   fprintf('%i\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%s \n',col,x,y,z,l,a,b, strn);
   
 end
+
+dbtype('ref2XYZ.m')
+dbtype('XYZ2LAB.m')

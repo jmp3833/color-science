@@ -1,3 +1,4 @@
+%% ref2XYZ Function
 function XYZ = ref2XYZ(ref,cmfs,ill)
     % compute XYZ from surface reflectance factor(s), color matching functions,
     % and illuminant spectral power distribution

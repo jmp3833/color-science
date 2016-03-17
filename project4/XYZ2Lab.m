@@ -1,3 +1,4 @@
+%% XYZ2Lab Function
 % Takes a 3 X n array of tristimulus values as well as the 3 X 1 
 % tristimulus values of a reference illuminant
 % and returns a 3 X n array of
