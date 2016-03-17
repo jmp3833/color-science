@@ -1,0 +1,281 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>calcColorCheckerTable</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-16"><meta name="DC.source" content="calcColorCheckerTable.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Script to calculate XYZ and LAB values for color checker chart under 2deg</span>
+<span class="comment">%standard observer and D65 light source. Format into a text table fr pretty</span>
+<span class="comment">%printing with color chart names</span>
+
+<span class="comment">%Fetch color values for each patch (omitting name field)</span>
+CC_spectra = importdata(<span class="string">'ColorChecker_380_780_5nm.txt'</span>);
+CC_delimited_spectra = CC_spectra(:,2:25);
+
+<span class="comment">%Load CIE struct</span>
+cie = loadCIEData();
+
+<span class="comment">% Calculate XYZ values for D65 light</span>
+XYZn_D65 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD65);
+
+<span class="comment">% Calculate all xyz values for colorchecker chart w/ 2 deg observer and D65</span>
+<span class="comment">% light source</span>
+xyzs = ref2XYZ(CC_delimited_spectra, cie.cmf2deg, cie.illD65);
+result = XYZ2Lab(xyzs, XYZn_D65);
+
+<span class="comment">% Read names of patches to pump into table</span>
+names = textread(<span class="string">'ColorChecker_names.txt'</span>,<span class="string">'%s'</span>,<span class="string">'delimiter'</span>,<span class="string">'|'</span>);
+
+<span class="comment">%Pretty print table of XYZ and Lab values for color patches</span>
+fprintf(<span class="string">'ColorChecker XYZ and Lab values (D65 Illuminant and 2deg. observer)'</span>);
+fprintf(<span class="string">'\nPatch #\tX\tY\tZ\tL\ta\tb\t Patch Name\n'</span>);
+
+sz = size(xyzs);
+numCols = sz(2);
+
+<span class="keyword">for</span> col = 1:(numCols)
+  xyz = xyzs(:,col);
+
+  x = xyz(1);
+  y = xyz(2);
+  z = xyz(3);
+
+  lab = result(:,col);
+  l = lab(1);
+  a = lab(2);
+  b = lab(3);
+
+  strn = names{col};
+
+  fprintf(<span class="string">'%i\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%s \n'</span>,col,x,y,z,l,a,b, strn);
+
+<span class="keyword">end</span>
+
+<span class="comment">%Print table with reduced values to trigger alternate Lab calculation</span>
+smallCheckerReadings = CC_delimited_spectra.*(.02);
+
+<span class="comment">% Calculate all xyz values for colorchecker chart w/ 2 deg observer and D65</span>
+<span class="comment">% light source</span>
+xyzs = ref2XYZ(smallCheckerReadings, cie.cmf2deg, cie.illD65);
+result = XYZ2Lab(xyzs, XYZn_D65);
+
+fprintf(<span class="string">'ColorChecker(Dark) XYZ and Lab values (D65 Illuminant and 2deg. observer)'</span>);
+fprintf(<span class="string">'\nPatch #\tX\tY\tZ\tL\ta\tb\t Patch Name\n'</span>);
+
+sz = size(xyzs);
+numCols = sz(2);
+
+<span class="keyword">for</span> col = 1:(numCols)
+  xyz = xyzs(:,col);
+
+  x = xyz(1);
+  y = xyz(2);
+  z = xyz(3);
+
+  lab = result(:,col);
+  l = lab(1);
+  a = lab(2);
+  b = lab(3);
+
+  strn = names{col};
+
+  fprintf(<span class="string">'%i\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%s \n'</span>,col,x,y,z,l,a,b, strn);
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">ColorChecker XYZ and Lab values (D65 Illuminant and 2deg. observer)
+Patch #	X	Y	Z	L	a	b	 Patch Name
+1	11.515	10.382	7.150	38.519	12.410	13.309	Dark Skin 
+2	39.135	36.598	27.056	66.974	14.329	17.320	Light Skin 
+3	18.349	19.633	35.647	51.420	-1.624	-21.603	Blue Sky 
+4	11.149	13.855	7.427	44.024	-13.963	21.774	Foliage 
+5	25.844	24.387	45.614	56.473	11.544	-24.698	Blue Flower 
+6	31.711	43.860	44.878	72.135	-33.101	3.115	Bluish Green 
+7	37.146	29.559	6.501	61.272	32.497	55.059	Orange 
+8	13.863	12.318	39.309	41.717	14.416	-42.900	Purplish Blue 
+9	29.133	19.847	14.994	51.664	45.468	13.382	Moderate Red 
+10	8.589	6.457	15.474	30.537	23.785	-24.136	Purple 
+11	33.917	44.153	11.430	72.331	-26.083	57.948	Yellow Green 
+12	46.186	42.496	8.677	71.211	17.187	64.297	Orange Yellow 
+13	8.918	6.418	32.274	30.443	27.024	-53.277	Blue 
+14	15.035	24.108	9.638	56.196	-40.771	35.342	Green 
+15	19.345	11.358	5.553	40.176	51.976	22.689	Red 
+16	55.846	58.973	9.641	81.277	-0.508	78.575	Yellow 
+17	29.677	19.352	32.263	51.096	50.004	-17.653	Magenta 
+18	14.414	19.975	39.001	51.809	-25.642	-25.126	Cyan 
+19	87.840	92.378	95.613	96.975	0.076	3.262	White 
+20	57.962	61.043	65.491	82.402	-0.133	0.831	Neutral 8 
+21	35.229	37.041	40.226	67.308	0.079	0.125	Neutral  6.5 
+22	19.349	20.471	22.154	52.365	-0.541	0.237	Neutral 5 
+23	8.765	9.291	10.319	36.540	-0.568	-0.600	Neutral 3.5 
+24	3.211	3.376	3.931	21.492	0.035	-1.462	Black 
+ColorChecker(Dark) XYZ and Lab values (D65 Illuminant and 2deg. observer)
+Patch #	X	Y	Z	L	a	b	 Patch Name
+1	0.230	0.208	0.143	1.876	1.350	1.188	Dark Skin 
+2	0.783	0.732	0.541	6.612	3.565	3.659	Light Skin 
+3	0.367	0.393	0.713	3.547	-0.255	-4.082	Blue Sky 
+4	0.223	0.277	0.149	2.503	-1.654	2.191	Foliage 
+5	0.517	0.488	0.912	4.406	2.184	-5.453	Blue Flower 
+6	0.634	0.877	0.898	7.924	-8.173	0.823	Bluish Green 
+7	0.743	0.591	0.130	5.340	7.416	7.347	Orange 
+8	0.277	0.246	0.786	2.225	1.766	-7.409	Purplish Blue 
+9	0.583	0.397	0.300	3.586	8.414	1.893	Moderate Red 
+10	0.172	0.129	0.309	1.166	2.009	-2.416	Purple 
+11	0.678	0.883	0.229	7.977	-6.593	10.483	Yellow Green 
+12	0.924	0.850	0.174	7.677	4.646	10.754	Orange Yellow 
+13	0.178	0.128	0.645	1.159	2.309	-7.234	Blue 
+14	0.301	0.482	0.193	4.355	-6.454	4.752	Green 
+15	0.387	0.227	0.111	2.052	7.005	1.949	Red 
+16	1.117	1.179	0.193	10.405	-0.138	15.181	Yellow 
+17	0.594	0.387	0.645	3.496	9.246	-3.202	Magenta 
+18	0.288	0.399	0.780	3.609	-3.745	-4.935	Cyan 
+19	1.757	1.848	1.912	14.666	0.021	0.885	White 
+20	1.159	1.221	1.310	10.710	-0.036	0.226	Neutral 8 
+21	0.705	0.741	0.805	6.692	0.019	0.030	Neutral  6.5 
+22	0.387	0.409	0.443	3.698	-0.088	0.038	Neutral 5 
+23	0.175	0.186	0.206	1.679	-0.054	-0.058	Neutral 3.5 
+24	0.064	0.068	0.079	0.610	0.002	-0.073	Black 
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%Script to calculate XYZ and LAB values for color checker chart under 2deg
+%standard observer and D65 light source. Format into a text table fr pretty
+%printing with color chart names
+
+%Fetch color values for each patch (omitting name field)
+CC_spectra = importdata('ColorChecker_380_780_5nm.txt');
+CC_delimited_spectra = CC_spectra(:,2:25);
+
+%Load CIE struct
+cie = loadCIEData();
+
+% Calculate XYZ values for D65 light
+XYZn_D65 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD65);
+
+% Calculate all xyz values for colorchecker chart w/ 2 deg observer and D65
+% light source
+xyzs = ref2XYZ(CC_delimited_spectra, cie.cmf2deg, cie.illD65);
+result = XYZ2Lab(xyzs, XYZn_D65);
+
+% Read names of patches to pump into table
+names = textread('ColorChecker_names.txt','%s','delimiter','|');
+
+%Pretty print table of XYZ and Lab values for color patches
+fprintf('ColorChecker XYZ and Lab values (D65 Illuminant and 2deg. observer)');
+fprintf('\nPatch #\tX\tY\tZ\tL\ta\tb\t Patch Name\n');
+
+sz = size(xyzs);
+numCols = sz(2);
+  
+for col = 1:(numCols)
+  xyz = xyzs(:,col);
+  
+  x = xyz(1);
+  y = xyz(2);
+  z = xyz(3);
+  
+  lab = result(:,col);
+  l = lab(1);
+  a = lab(2);
+  b = lab(3);
+  
+  strn = names{col};
+  
+  fprintf('%i\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%s \n',col,x,y,z,l,a,b, strn);
+  
+end
+
+%Print table with reduced values to trigger alternate Lab calculation
+smallCheckerReadings = CC_delimited_spectra.*(.02);
+
+% Calculate all xyz values for colorchecker chart w/ 2 deg observer and D65
+% light source
+xyzs = ref2XYZ(smallCheckerReadings, cie.cmf2deg, cie.illD65);
+result = XYZ2Lab(xyzs, XYZn_D65);
+
+fprintf('ColorChecker(Dark) XYZ and Lab values (D65 Illuminant and 2deg. observer)');
+fprintf('\nPatch #\tX\tY\tZ\tL\ta\tb\t Patch Name\n');
+
+sz = size(xyzs);
+numCols = sz(2);
+  
+for col = 1:(numCols)
+  xyz = xyzs(:,col);
+  
+  x = xyz(1);
+  y = xyz(2);
+  z = xyz(3);
+  
+  lab = result(:,col);
+  l = lab(1);
+  a = lab(2);
+  b = lab(3);
+  
+  strn = names{col};
+  
+  fprintf('%i\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%s \n',col,x,y,z,l,a,b, strn);
+  
+end
+
+##### SOURCE END #####
+--></body></html>
