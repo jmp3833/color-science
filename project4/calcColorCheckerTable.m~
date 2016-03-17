@@ -1,4 +1,6 @@
-%Scri
+%Script to calculate XYZ and LAB values for color checker chart under 2deg
+%standard observer and D65 light source. Format into a text table fr pretty
+%printing with color chart names
 
 %Fetch color values for each patch (omitting name field)
 CC_spectra = importdata('ColorChecker_380_780_5nm.txt');
@@ -18,4 +20,5 @@ result = XYZ2Lab(xyzs, XYZn_D65);
 % Read names of patches to pump into table
 names = textread('ColorChecker_names.txt','%s','delimiter','|');
 
-
+fprintf('ColorChecker XYZ and Lab values (D65 Illuminant and 2deg. observer)');
+fprintf('Patch #\tX\tY\tZ\tL\ta\tb\t Patch Name');

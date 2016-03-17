@@ -20,4 +20,25 @@ result = XYZ2Lab(xyzs, XYZn_D65);
 % Read names of patches to pump into table
 names = textread('ColorChecker_names.txt','%s','delimiter','|');
 
+fprintf('ColorChecker XYZ and Lab values (D65 Illuminant and 2deg. observer)');
+fprintf('\nPatch #\tX\tY\tZ\tL\ta\tb\t Patch Name\n');
 
+sz = size(xyzs);
+numCols = sz(2);
+  
+for col = 1:(numCols)
+  xyz = xyzs(:,col);
+  
+  x = xyz(1);
+  y = xyz(2);
+  z = xyz(3);
+  
+  lab = result(:,col);
+  l = lab(1);
+  a = lab(2);
+  b = lab(3);
+  
+  strn = names{col};
+  
+  fprintf('%i\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%s \n',col,x,y,z,l,a,b, strn);
+end
