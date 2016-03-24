@@ -26,8 +26,8 @@ metaCheckerALABs = XYZ2Lab(metaCheckerAXYZs, XYZn_A);
 deltaALab = deltaEab(colorCheckerALABs, metaCheckerALABs);
 deltaD65Lab = deltaEab(colorCheckerD65LABs, metaCheckerD65LABs);
 
-res = [ 1:1:24; deltaD65Lab(2:25); deltaALab(2:25);];
+res = [ 1:0:25; deltaALab(1:25); deltaD65Lab(1:25)];
 
 %Print Column Matrices in formatted table
-fprintf('Patch #\tDELab D65\tDEab illA\n')
-fprintf(1, [repmat('%d\t   %2.4d\t   %2.3f\n', 1, 25) '\n'], res);
+fprintf('Patch #\tDELab D65\tDEab illA')
+fprintf(1, [repmat('%d\t%2.3f\t%2.4d\n', 1, 24) '\n'], res);

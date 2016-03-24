@@ -8,7 +8,8 @@ function DEab = deltaEab (Lab1, Lab2)
   for col = 1:(numCols) 
     l1 = Lab1(:,col);
     l2 = Lab2(:,col);
-    DEab(col) = sqrt((l2(1) - l1(1))^2 + (l2(2) - l1(2))^2 + (l2(3) - l1(3))^2)
+    DEab(col) = sqrt((l2(1) - l1(1))^2 + (l2(2) - l1(2))^2 ...
+    + (l2(3) - l1(3))^2);
   end
   
 end
