@@ -1,0 +1,44 @@
+function [ output_args ] = calcColorMunkiXYZs( input_args )
+    cm_lams_norm = 410:10:730;
+    cm_lams_trans = 380:10:730;
+
+    % define header offsets for reading the .sp files
+    cm_h_offset_norm = 54;
+    cm_h_offset_trans = 57;
+
+    % load and normalize the measured spectral data for the patch #1
+    data = importSP('161.sp');
+    real_161 = data/100;
+    data = importSP('161-imaged.sp');
+    imaged_161 = data/100;
+    data = importSP('161-created.sp');
+    matching_161 = data/100;
+
+    % repeat the section above for patch #2
+    data = importSP('162.sp');
+    real_162 = data/100;
+    data = importSP('162-imaged.sp');
+    imaged_162 = data/100;
+    data = importSP('162-created.sp');
+    matching_162 = data/100;
+
+    %Interpolate XYZ calculated data 
+    real161_interp = interp1(cm_lams_trans, real_161, cie.lambda(:),'linear','extrap');
+    imaged161_interp = interp1(cm_lams_trans, imaged_161, cie.lambda(:),'linear','extrap');
+    matching161_interp = interp1(cm_lams_trans, matching_161, cie.lambda(:),'linear','extrap');
+
+    real162_interp = interp1(cm_lams_trans, real_162, cie.lambda(:),'linear','extrap');
+    imaged162_interp = interp1(cm_lams_trans, imaged_162, cie.lambda(:),'linear','extrap');
+    matching162_interp = interp1(cm_lams_trans, matching_162, cie.lambda(:),'linear','extrap');
+    
+    %Calculate xyz values for real imaged and matching patches
+    xyz161RealCalc = ref2XYZ(real161_interp, cie.cmf2deg, cie.illD50);
+    xyz161ImagedCalc = ref2XYZ(imaged161_interp, cie.cmf2deg, cie.illD50);
+    xyz161MatchingCalc = ref2XYZ(matching161_interp, cie.cmf2deg, cie.illD50);
+    xyz162RealCalc = ref2XYZ(real162_interp, cie.cmf2deg, cie.illD50);
+    xyz162ImagedCalc = ref2XYZ(imaged162_interp, cie.cmf2deg, cie.illD50);
+    xyz162MatchingCalc = ref2XYZ(matching162_interp, cie.cmf2deg, cie.illD50);
+    
+    
+end
+

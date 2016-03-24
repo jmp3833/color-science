@@ -26,8 +26,21 @@ metaCheckerALABs = XYZ2Lab(metaCheckerAXYZs, XYZn_A);
 deltaALab = deltaEab(colorCheckerALABs, metaCheckerALABs);
 deltaD65Lab = deltaEab(colorCheckerD65LABs, metaCheckerD65LABs);
 
+%Generate result string to print
 res = [ 1:1:24; deltaD65Lab(2:25); deltaALab(2:25);];
 
 %Print Column Matrices in formatted table
 fprintf('Patch #\tDELab D65\tDEab illA\n')
 fprintf(1, [repmat('%d\t   %2.4d\t   %2.3f\n', 1, 25) '\n'], res);
+
+%Calc XYZ values of real, imaged, and matching patches
+patchXYZs = calcColorMunkiXYZs();
+XYZn_D50 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD50);
+
+patchLABs = XYZ2Lab(patchXYZs, XYZn_D50);
+
+%Compare LAB values of real, imaged, and matching patches
+real161imaged = deltaEab(patchLABs(:,1), patchLABs(:,2));
+real161matching = deltaEab(patchLABs(:,1), patchLABs(:,3));
+real162imaged = deltaEab(patchLABs(:,4), patchLABs(:,5));
+real162matching = deltaEab(patchLABs(:,4), patchLABs(:,6));

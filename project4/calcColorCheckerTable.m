@@ -78,5 +78,6 @@ for col = 1:(numCols)
   
 end
 
+%display functions used for reporting
 dbtype('ref2XYZ.m')
 dbtype('XYZ2LAB.m')
