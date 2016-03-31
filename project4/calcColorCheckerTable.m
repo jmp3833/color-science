@@ -1,4 +1,6 @@
 %% Calculation of Lab Values for ColorChecker Charts
+%% Team 14 - Justin Peterson and Jenee Langlois
+
 %Script to calculate XYZ and LAB values for color checker chart under 2deg
 %standard observer and D65 light source. Format into a text table fr pretty
 %printing with color chart names
@@ -51,7 +53,12 @@ smallCheckerReadings = CC_delimited_spectra.*(.02);
 
 % Calculate all xyz values for colorchecker chart w/ 2 deg observer and D65
 % light source
+
+%% CC_Delimeted spectra XYZs
+
 xyzs = ref2XYZ(smallCheckerReadings, cie.cmf2deg, cie.illD65);
+fprintf('CC_XYZs = \n');
+disp(xyzs);
 result = XYZ2Lab(xyzs, XYZn_D65);
 
 fprintf('ColorChecker(Dark) XYZ and Lab values (D65 Illuminant and 2deg. observer)');
@@ -81,3 +88,4 @@ end
 %display functions used for reporting
 dbtype('ref2XYZ.m')
 dbtype('XYZ2LAB.m')
+dbtype('deltaEab.m');

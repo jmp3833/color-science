@@ -1,0 +1,241 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>calcDeltaEABs</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-03-30"><meta name="DC.source" content="calcDeltaEABs.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%Import MetaChecker and ColorChecker values to 81x25 matrices</span>
+colorChecker = importdata(<span class="string">'ColorChecker_380-780-5nm.txt'</span>);
+metaChecker = importdata(<span class="string">'MetaChecker_380-780-5nm.txt'</span>);
+
+<span class="comment">%Import CIE data into struct</span>
+cie = loadCIEData();
+
+<span class="comment">%Calculate XYZ values of samples under A and D65 light sources with 2deg</span>
+<span class="comment">%std observer</span>
+colorCheckerD65XYZs = ref2XYZ(colorChecker, cie.cmf2deg, cie.illD65);
+colorCheckerAXYZs = ref2XYZ(colorChecker, cie.cmf2deg, cie.illA);
+metaCheckerD65XYZs = ref2XYZ(metaChecker, cie.cmf2deg, cie.illD65);
+metaCheckerAXYZs = ref2XYZ(metaChecker, cie.cmf2deg, cie.illA);
+
+<span class="comment">%Supply XYZ values for A and D65 light sources using 2deg std ovserver</span>
+XYZn_D65 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD65);
+XYZn_A = ref2XYZ(cie.illE,cie.cmf2deg,cie.illA);
+
+<span class="comment">%Calculate LAB values for color and meta checkers under D65 and A light</span>
+colorCheckerD65LABs = XYZ2Lab(colorCheckerD65XYZs, XYZn_D65);
+colorCheckerALABs = XYZ2Lab(colorCheckerAXYZs, XYZn_A);
+metaCheckerD65LABs = XYZ2Lab(metaCheckerD65XYZs, XYZn_D65);
+metaCheckerALABs = XYZ2Lab(metaCheckerAXYZs, XYZn_A);
+
+<span class="comment">%Calculate DeltaEAB values for samples under A and D65</span>
+deltaALab = deltaEab(colorCheckerALABs, metaCheckerALABs);
+deltaD65Lab = deltaEab(colorCheckerD65LABs, metaCheckerD65LABs);
+
+<span class="comment">%Generate result string to print</span>
+res = [ 1:1:24; deltaD65Lab(2:25); deltaALab(2:25);];
+
+<span class="comment">%Print Column Matrices in formatted table</span>
+fprintf(<span class="string">'Patch #\tDELab D65\tDEab illA\n'</span>)
+fprintf(1, [repmat(<span class="string">'%d\t   %2.4d\t   %2.3f\n'</span>, 1, 25) <span class="string">'\n'</span>], res);
+
+<span class="comment">%Calc XYZ values of real, imaged, and matching patches</span>
+patchXYZs = calcColorMunkiXYZs();
+XYZn_D50 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD50);
+
+patchLABs = XYZ2Lab(patchXYZs, XYZn_D50);
+
+<span class="comment">%Compare LAB values of real, imaged, and matching patches</span>
+real161imaged = deltaEab(patchLABs(:,1), patchLABs(:,2));
+real161matching = deltaEab(patchLABs(:,1), patchLABs(:,3));
+real162imaged = deltaEab(patchLABs(:,4), patchLABs(:,5));
+real162matching = deltaEab(patchLABs(:,4), patchLABs(:,6));
+
+<span class="comment">%Create a new canvas with appropriate scale</span>
+clf;
+hold <span class="string">on</span>
+
+plot(patchLABs(2,1), patchLABs(3,1), <span class="string">'r.'</span>, <span class="string">'MarkerSize'</span>,25);
+plot(patchLABs(2,2), patchLABs(3,2), <span class="string">'r.'</span>, <span class="string">'MarkerSize'</span>,25);
+plot(patchLABs(2,3), patchLABs(3,3), <span class="string">'r.'</span>, <span class="string">'MarkerSize'</span>,25);
+
+plot(patchLABs(2,4), patchLABs(3,4), <span class="string">'b.'</span>, <span class="string">'MarkerSize'</span>,25);
+plot(patchLABs(2,5), patchLABs(3,5), <span class="string">'b.'</span>, <span class="string">'MarkerSize'</span>,25);
+plot(patchLABs(2,6), patchLABs(3,6), <span class="string">'b.'</span>, <span class="string">'MarkerSize'</span>,25);
+
+axis([-60,60,-60,60]);
+title(<span class="string">'a* b* values for real, imaged, and matching patches'</span>);
+legend(<span class="string">'16.1 real'</span>, <span class="string">'16.1 imaged'</span>, <span class="string">'16.1 matching'</span>,<span class="keyword">...</span>
+    <span class="string">'16.2 real'</span>, <span class="string">'16.2 imaged'</span>, <span class="string">'16.2 matching'</span>,<span class="string">'Location'</span>,<span class="string">'southwest'</span>);
+xlabel(<span class="string">'a*'</span>);
+ylabel(<span class="string">'b*'</span>);
+grid <span class="string">on</span>;
+
+<span class="comment">%Draw circles of 2.5 radius over real a* and b* vals of both patches</span>
+circle(patchLABs(2,1), patchLABs(3,1), 2.5);
+circle(patchLABs(2,4), patchLABs(3,4), 2.5);
+
+hold <span class="string">off</span>;
+</pre><pre class="codeoutput">Patch #	DELab D65	DEab illA
+1	   2.5974e-07	   22.636
+2	   1.1361e-07	   22.178
+3	   1.0559e-07	   32.275
+4	   1.9045e-07	   28.232
+5	   3.9798e-07	   25.937
+6	   1.3263e-07	   29.487
+7	   8.5812e-08	   17.309
+8	   1.4537e-07	   27.241
+9	   1.6652e-07	   12.210
+10	   2.9074e-07	   19.509
+11	   1.5608e-07	   22.623
+12	   1.3047e-07	   16.970
+13	   1.0833e-07	   20.083
+14	   1.1933e-07	   26.099
+15	   6.7078e-08	   7.053
+16	   1.3297e-07	   11.532
+17	   6.4681e-09	   10.690
+18	   8.5813e-08	   31.619
+19	   2.6606e-07	   2.545
+20	   6.9477e-08	   15.940
+21	   1.8463e-07	   28.926
+22	   8.3373e-08	   26.751
+23	   3.6676e-07	   20.574
+24	   1.0221e-07	   18.567
+</pre><img vspace="5" hspace="5" src="calcDeltaEABs_01.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%Import MetaChecker and ColorChecker values to 81x25 matrices
+colorChecker = importdata('ColorChecker_380-780-5nm.txt');
+metaChecker = importdata('MetaChecker_380-780-5nm.txt');
+
+%Import CIE data into struct
+cie = loadCIEData();
+
+%Calculate XYZ values of samples under A and D65 light sources with 2deg
+%std observer
+colorCheckerD65XYZs = ref2XYZ(colorChecker, cie.cmf2deg, cie.illD65);
+colorCheckerAXYZs = ref2XYZ(colorChecker, cie.cmf2deg, cie.illA);
+metaCheckerD65XYZs = ref2XYZ(metaChecker, cie.cmf2deg, cie.illD65);
+metaCheckerAXYZs = ref2XYZ(metaChecker, cie.cmf2deg, cie.illA);
+
+%Supply XYZ values for A and D65 light sources using 2deg std ovserver
+XYZn_D65 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD65);
+XYZn_A = ref2XYZ(cie.illE,cie.cmf2deg,cie.illA);
+
+%Calculate LAB values for color and meta checkers under D65 and A light
+colorCheckerD65LABs = XYZ2Lab(colorCheckerD65XYZs, XYZn_D65);
+colorCheckerALABs = XYZ2Lab(colorCheckerAXYZs, XYZn_A);
+metaCheckerD65LABs = XYZ2Lab(metaCheckerD65XYZs, XYZn_D65);
+metaCheckerALABs = XYZ2Lab(metaCheckerAXYZs, XYZn_A);
+
+%Calculate DeltaEAB values for samples under A and D65
+deltaALab = deltaEab(colorCheckerALABs, metaCheckerALABs);
+deltaD65Lab = deltaEab(colorCheckerD65LABs, metaCheckerD65LABs);
+
+%Generate result string to print
+res = [ 1:1:24; deltaD65Lab(2:25); deltaALab(2:25);];
+
+%Print Column Matrices in formatted table
+fprintf('Patch #\tDELab D65\tDEab illA\n')
+fprintf(1, [repmat('%d\t   %2.4d\t   %2.3f\n', 1, 25) '\n'], res);
+
+%Calc XYZ values of real, imaged, and matching patches
+patchXYZs = calcColorMunkiXYZs();
+XYZn_D50 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD50);
+
+patchLABs = XYZ2Lab(patchXYZs, XYZn_D50);
+
+%Compare LAB values of real, imaged, and matching patches
+real161imaged = deltaEab(patchLABs(:,1), patchLABs(:,2));
+real161matching = deltaEab(patchLABs(:,1), patchLABs(:,3));
+real162imaged = deltaEab(patchLABs(:,4), patchLABs(:,5));
+real162matching = deltaEab(patchLABs(:,4), patchLABs(:,6));
+
+%Create a new canvas with appropriate scale
+clf;
+hold on
+
+plot(patchLABs(2,1), patchLABs(3,1), 'r.', 'MarkerSize',25);
+plot(patchLABs(2,2), patchLABs(3,2), 'r.', 'MarkerSize',25);
+plot(patchLABs(2,3), patchLABs(3,3), 'r.', 'MarkerSize',25);
+
+plot(patchLABs(2,4), patchLABs(3,4), 'b.', 'MarkerSize',25);
+plot(patchLABs(2,5), patchLABs(3,5), 'b.', 'MarkerSize',25);
+plot(patchLABs(2,6), patchLABs(3,6), 'b.', 'MarkerSize',25);
+
+axis([-60,60,-60,60]);
+title('a* b* values for real, imaged, and matching patches');
+legend('16.1 real', '16.1 imaged', '16.1 matching',...
+    '16.2 real', '16.2 imaged', '16.2 matching','Location','southwest');
+xlabel('a*');
+ylabel('b*');
+grid on;
+
+%Draw circles of 2.5 radius over real a* and b* vals of both patches
+circle(patchLABs(2,1), patchLABs(3,1), 2.5);
+circle(patchLABs(2,4), patchLABs(3,4), 2.5);
+
+hold off;
+##### SOURCE END #####
+--></body></html>

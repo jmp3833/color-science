@@ -44,3 +44,29 @@ real161imaged = deltaEab(patchLABs(:,1), patchLABs(:,2));
 real161matching = deltaEab(patchLABs(:,1), patchLABs(:,3));
 real162imaged = deltaEab(patchLABs(:,4), patchLABs(:,5));
 real162matching = deltaEab(patchLABs(:,4), patchLABs(:,6));
+
+%Create a new canvas with appropriate scale
+clf;
+hold on
+
+plot(patchLABs(2,1), patchLABs(3,1), 'r.', 'MarkerSize',25);
+plot(patchLABs(2,2), patchLABs(3,2), 'rs');
+plot(patchLABs(2,3), patchLABs(3,3), 'rd');
+
+plot(patchLABs(2,4), patchLABs(3,4), 'b.', 'MarkerSize',25);
+plot(patchLABs(2,5), patchLABs(3,5), 'bs');
+plot(patchLABs(2,6), patchLABs(3,6), 'bd');
+
+axis([-60,60,-60,60]);
+title('a* b* values for real, imaged, and matching patches');
+legend('16.1 real', '16.1 imaged', '16.1 matching',...
+    '16.2 real', '16.2 imaged', '16.2 matching','Location','southwest');
+xlabel('a*');
+ylabel('b*');
+grid on;
+
+%Draw circles of 2.5 radius over real a* and b* vals of both patches
+circle(patchLABs(2,1), patchLABs(3,1), 2.5);
+circle(patchLABs(2,4), patchLABs(3,4), 2.5);
+
+hold off;
