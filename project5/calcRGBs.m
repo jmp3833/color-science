@@ -111,6 +111,18 @@ cam_XYZs = cam_matrix * cam_rgbs_lin;
 fprintf('cam_XYZs = \n');
 disp(cam_XYZs);
 
+%% Calculate CIELab and DeltaEAB of ColorChecker for Estimated XYZs
+
+cie = loadCIEData();
+XYZn_D50 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD50);
+RGB_Labs = XYZ2Lab(cam_XYZs, XYZn_D50);
+
+ColorMunki_CieLabs = munki_data(:, 5:7)';
+
+deltas = deltaEab(RGB_Labs, ColorMunki_CieLabs);
+
+
+
 
 
 
