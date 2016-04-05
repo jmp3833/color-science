@@ -121,7 +121,34 @@ ColorMunki_CieLabs = munki_data(:, 5:7)';
 
 deltas = deltaEab(RGB_Labs, ColorMunki_CieLabs);
 
+%% Visualize using chromatic adaptation
 
+XYZ_D50 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD50)';
+XYZ_D65 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD65)';
+
+% visualize ColorMunki XYZs in sRGB
+
+munki_XYZs_D65 = catBradford(munki_XYZs, XYZ_D50', XYZ_D65');
+munki_XYZs_sRGBs = XYZ2sRGB(munki_XYZs_D65);
+pix = reshape(munki_XYZs_sRGBs', [6 4 3]);
+pix = uint8(pix*255);
+pix = imrotate(pix, -90);
+pix = flipdim(pix,2);
+figure;
+image(pix);
+title('munkiXYZs chromatically adapted and visualized in sRGB');
+
+% visualize camera-estimated XYZs in sRGB
+
+cam_XYZs_D65 = catBradford(cam_XYZs, XYZ_D50', XYZ_D65');
+cam_XYZs_sRGBs = XYZ2sRGB(cam_XYZs_D65);
+pix = reshape(cam_XYZs_sRGBs', [6 4 3]);
+pix = uint8(pix*255);
+pix = imrotate(pix, -90);
+pix = flipdim(pix,2);
+figure;
+image(pix);
+title('estimatedXYZs chromatically adapted and visualized in sRGB');
 
 
 
