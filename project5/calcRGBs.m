@@ -1,4 +1,6 @@
-%% Calculate normalized RGB values
+%% Calculate normalized RGB values Justin Peterson && Jenee Lanlois (Team 14)
+
+
 % Using Readings from Jenee's 15" 2010 matte Macbook Pro
 
 %Manual entry of RGB values taken from photoshop
@@ -123,8 +125,8 @@ deltas = deltaEab(RGB_Labs, ColorMunki_CieLabs);
 
 %% Visualize using chromatic adaptation
 
-XYZ_D50 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD50)';
-XYZ_D65 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD65)';
+XYZ_D50 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD50);
+XYZ_D65 = ref2XYZ(cie.illE,cie.cmf2deg,cie.illD65);
 
 % visualize ColorMunki XYZs in sRGB
 
@@ -154,4 +156,56 @@ title('estimatedXYZs chromatically adapted and visualized in sRGB');
 
 save('camera_model.mat', 'cam_polys', 'cam_matrix');
 
+%% Calc Estimated Patch LABs
 
+%Patch RGB values read from patch 16.1 and 16.2
+patch_RGBs = [120,54,42;69,41,38]'./255;
+
+% use the functions to linearize the camera RGB data
+patch_rgbs_lin(r,:) = polyval(cam_polys(r,:),patch_RGBs(r,:));
+patch_rgbs_lin(g,:) = polyval(cam_polys(g,:),patch_RGBs(g,:));
+patch_rgbs_lin(b,:) = polyval(cam_polys(b,:),patch_RGBs(b,:));
+
+% clip out of range values
+patch_rgbs_lin(patch_rgbs_lin<0) = 0;
+patch_rgbs_lin(patch_rgbs_lin>1) = 1;
+
+cam_est_patch_XYZs = cam_matrix * patch_rgbs_lin;
+
+%Calculate LAB Values with D50 ref illuminant
+patch_LABs = XYZ2Lab(cam_est_patch_XYZs, XYZn_D50);
+
+%Values measured in project 2, step 2 for
+%real patch LAB values (16.1,%16.2)
+calced_ColorMunki_Lab = ...
+    [36.683077,27.123596,22.611685;28.408574,14.193084,9.377987]';
+
+patchDeltas = deltaEab(patch_LABs,calced_ColorMunki_Lab);
+
+%% Display estimated patches
+
+% visualize Cam XYZs in sRGB for patches 16.1 and 16.2
+% Figures commented out in lieu of screenshots to compare patch image with
+% the two other rendered images.
+
+cam_patch_XYZs_D65 = catBradford(cam_est_patch_XYZs, XYZ_D50, XYZ_D65);
+cam_patch_XYZs_sRGBs = XYZ2sRGB(cam_patch_XYZs_D65);
+pix = reshape(cam_patch_XYZs_sRGBs', [2 1 3]);
+pix = uint8(pix*255);
+pix = flipdim(pix,2);
+%figure;
+%image(pix);
+title('cam XYZs chromatically adapted and visualized in sRGB (patch 16.1 - 16.2)');
+
+% visualize camera-estimated XYZs in sRGB
+measured_patch_XYZs = ...
+    [12.671117,9.367839,3.273952;6.704818,5.610822,3.127515]'
+
+munki_XYZs_D65 = catBradford(measured_patch_XYZs, XYZ_D50, XYZ_D65);
+munki_XYZs_sRGBs = XYZ2sRGB(munki_XYZs_D65);
+pix = reshape(munki_XYZs_sRGBs', [2 1 3]);
+pix = uint8(pix*255);
+pix = flipdim(pix,2);
+%figure;
+%image(pix);
+title('munki XYZs chromatically adapted and visualized in sRGB (patch 16.1 - 16.2)');
