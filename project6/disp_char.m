@@ -84,6 +84,55 @@ GLUT_fwd = interp1(ramp_DCs_G,ramp_G_GS(1,:),[0:1:255],'spline');
 hold on;
 plot(0:255,RLUT_fwd, 0:255, GLUT_fwd, 0:255, BLUT_fwd);
 axis([0,255,0,1]);
+title('Forward Model LUTs');
+xlabel('Digital counts RGB 0-255');
+ylabel('radiometric scalars RGB 0-1');
 
 %% Test quality of forward model
 run test_forward_model_1516;
+
+%% Generare reverse display matrix
+
+%inverse of the first three columns of the forward column matrix
+M_rev = inv(M_fwd(:,1:3));
+fprintf('M_rev = \n')
+disp(M_rev);
+
+% build the reverse LUT for the red channel
+RLUT_rev = round(interp1(RLUT_fwd, 0:255, linspace(0,max(RLUT_fwd),1024), 'spline', 0));
+
+% repeat for green and blue
+GLUT_rev = round(interp1(GLUT_fwd, 0:255, linspace(0,max(GLUT_fwd),1024), 'spline', 0));
+BLUT_rev = round(interp1(BLUT_fwd, 0:255, linspace(0,max(BLUT_fwd),1024), 'spline', 0));
+
+%% Save and plot final display model
+
+M_disp = M_rev;
+XYZk = black_XYZ;
+XYZk_disp = XYZk;
+RLUT_disp = RLUT_rev;
+GLUT_disp = GLUT_rev;
+BLUT_disp = BLUT_rev;
+
+% save the reverse model matrix, reverse LUTs as and black level as 'display_model.mat'
+ save('display_model.mat','M_disp','RLUT_disp','GLUT_disp','BLUT_disp','XYZk_disp');
+ 
+%% Display Reverse Matrix content
+
+fprintf('M_disp = M_rev = \n');
+disp(M_rev);
+
+fprintf('XYZk_disp = XYZk = \n');
+disp(XYZk);
+ 
+%% Print relevant functions
+dbtype('derive_fwd_matrix.m');
+
+clf;
+hold on;
+plot(0:1023,RLUT_rev,0:1023,GLUT_rev,0:1023,BLUT_rev);
+axis([0,1024,0,250]);
+title('reverse model LUTs');
+xlabel('scaled/quantized radiometric scalars RGB 0-1023');
+ylabel('digital counts RGB 0-255');
+hold off;
