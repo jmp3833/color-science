@@ -1,4 +1,4 @@
-%% Lab 6 - Display Characterization: Team 14 (Jenee Janglois & Justin Peterson)
+%% Lab 6 - Display Characterization: Team 14 (Jenee Langlois & Justin Peterson)
 
 %% Import Ramps Data
 
@@ -12,11 +12,13 @@ M_fwd = derive_fwd_matrix(MAX_XYZS, black_XYZ, white_XYZ);
 
 %% Derrive forward LUTs
 
+Yw = white_XYZ(2);
+
 % Subtract black from red ramp XYZ values
 red_sub_black = ramp_R_XYZs - repmat(black_XYZ,11,1);
 
 %Normalize values by display white
-red_sub_black = red_sub_black ./ repmat(white_XYZ,11,1); 
+red_sub_black = red_sub_black ./ Yw; 
 
 %Clip values outside the range of zero and one
 red_sub_black(red_sub_black<0) = 0;
@@ -39,7 +41,7 @@ RLUT_fwd = interp1(ramp_DCs,ramp_R_RS(1,:),[0:1:255],'spline');
 blue_sub_black = ramp_B_XYZs - repmat(black_XYZ,11,1);
 
 %Normalize values by display white
-blue_sub_black = blue_sub_black ./ repmat(white_XYZ,11,1); 
+blue_sub_black = blue_sub_black ./ Yw; 
 
 %Clip values outside the range of zero and one
 blue_sub_black(blue_sub_black<0) = 0;
@@ -62,7 +64,7 @@ BLUT_fwd = interp1(ramp_DCs,ramp_B_BS(1,:),[0:1:255],'spline');
 green_sub_black = ramp_G_XYZs - repmat(black_XYZ,11,1);
 
 %Normalize values by display white
-green_sub_black = green_sub_black ./ repmat(white_XYZ,11,1); 
+green_sub_black = green_sub_black ./ Yw; 
 
 %Clip values outside the range of zero and one
 green_sub_black(green_sub_black<0) = 0;
@@ -169,13 +171,50 @@ R_LUT_RESULT = RLUT_rev(scalars);
 G_LUT_RESULT = GLUT_rev(scalars);
 B_LUT_RESULT = BLUT_rev(scalars);
 
+result_RGBs = [R_LUT_RESULT(:,1) G_LUT_RESULT(:,2) B_LUT_RESULT(:,3)];
+
 % Convert to 8 bit unsigned integers
 R_LUT_RESULT = uint8(RLUT_rev(scalars(:,1)))';
 G_LUT_RESULT = uint8(GLUT_rev(scalars(:,2)))';
 B_LUT_RESULT = uint8(BLUT_rev(scalars(:,3)))';
 
 result = [R_LUT_RESULT G_LUT_RESULT B_LUT_RESULT];
-result = reshape(result,[4,6,3]);
+pix = reshape(result,[6,4,3]);
+pix = imrotate(pix, -90);
+pix = flip(pix, 2);
 
 figure;
-image(result);
+image(pix);
+
+title('colorchecker rendered from the measured XYZs using hte display model');
+
+%% Evaluate Model Quality
+ 
+% push the model-calculated digital counts from the previous step through 
+% the forward LUTs to calculate radiometric scalars
+
+result = result';
+for i=1:size(result,2)
+    est_patch_RSs(1,i) = RLUT_fwd(result(1,i)+1);
+    est_patch_RSs(2,i) = GLUT_fwd(result(2,i)+1);
+    est_patch_RSs(3,i) = BLUT_fwd(result(3,i)+1);
+end
+ 
+% add the homogeneous coordinate to the RSs
+est_patch_RSs_h = [est_patch_RSs; ones(1,size(est_patch_RSs,2))];
+ 
+% push the RSs through the forward model matrix to calculate XYZs
+result_XYZs = M_fwd * est_patch_RSs_h * 100;
+
+%Map XYZ values over to D50 reference illuminant
+result_XYZs = catBradford(result_XYZs,D65_XYZ,D50_XYZ);
+
+%Convert to LAB values from XYZ values
+result_LABs = XYZ2Lab(result_XYZs,D50_XYZ);
+colorMunki_LABs = importdata('munki_CC_XYZs_Labs.txt');
+colorMunki_LABs = colorMunki_LABs(:,5:7);
+
+lab_deltas = deltaEab(result_LABs, colorMunki_LABs');
+
+
+
