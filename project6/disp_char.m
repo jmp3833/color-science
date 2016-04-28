@@ -157,7 +157,7 @@ adapt_XYZs = adapt_XYZs' - repmat(black_XYZ,24,1);
 scalars = adapt_XYZs * M_disp;
 
 % Normalize scalars by 100
-scalars = scalars./100;
+scalars = scalars/100;
 
 % Clip any out of range values
 scalars(scalars<0) = 0;
@@ -215,6 +215,3 @@ colorMunki_LABs = importdata('munki_CC_XYZs_Labs.txt');
 colorMunki_LABs = colorMunki_LABs(:,5:7);
 
 lab_deltas = deltaEab(result_LABs, colorMunki_LABs');
-
-
-
