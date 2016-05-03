@@ -141,9 +141,9 @@ hold off;
 
 %% Test reverse display model
 
-cie = loadCIEData();
+cie = loadCIEdata();
 D50_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD50); 	
-D65_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD50);
+D65_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD65);
 
 Munki_Patch_XYZs = importdata('munki_CC_XYZs_Labs.txt');
 Munki_Patch_XYZs = Munki_Patch_XYZs(:,2:4);

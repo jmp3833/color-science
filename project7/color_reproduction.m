@@ -70,6 +70,11 @@ cam_RSs_h = [cam_LUT_Results; ones(1,size(cam_LUT_Results,2))];
 % apply the forward matrix to the RSs to calculate model-predicted XYZs 
 modeled_XYZs = M_fwd * cam_RSs_h * 100;
 
+%convert XYZs from D50 to D65
+cie = loadCIEData();
+D50_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD50); 	
+D65_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD65);
+modeled_XYZs = catBradford(modeled_XYZs, D50_XYZ, D65_XYZ);
 
 
 %% display relevant functions for report
