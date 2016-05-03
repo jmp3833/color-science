@@ -9,12 +9,15 @@ munkiLABs = colorMunkiData(:,5:7);
 
 cam_RGBs = importdata('cam_rgbs.mat');
 
+dispModel = importdata('display_model.mat');
+
 fprintf('camera RGBs:\n');
 disp(cam_RGBs);
 
-%% Evaluate color error in model
+fprintf('Reverse Display Model:\n');
+disp(dispModel);
 
-dispModel = importdata('display_model.mat');
+%% Evaluate color error in model
 
 %Push through matrix model and conver to doubles
 RGBCoords = derriveRGBs(munkiXYZs, dispModel);
@@ -27,7 +30,7 @@ dataSet = vertcat(RGBCoords, repmat(0,3,3), repmat(100,3,3));
 dataReadings = [1:30; dataSet'];
 
 %Write data to formatted ti1 file
-writeTiFile('disp_model_test.ti1', dataReadings);
+writeTiFile('data/disp_model_test.ti1', dataReadings);
 
 %% Uncalibrated color imaging workflow
 
@@ -43,7 +46,7 @@ dataSet = [cam_RGBs_scale, repmat(0,3,3),repmat(100,3,3)];
 dataSet = [1:30;dataSet];
 
 %Write data to formatted ti1 file
-writeTiFile('workflow_test_uncal.ti1', dataReadings);
+writeTiFile('data/workflow_test_uncal.ti1', dataReadings);
 
 %% Find errors in color imaging workflow
 
@@ -75,6 +78,19 @@ cie = loadCIEData();
 D50_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD50); 	
 D65_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD65);
 modeled_XYZs = catBradford(modeled_XYZs, D50_XYZ, D65_XYZ);
+
+%Pass new XYZs through display model to convert back to XYZs
+modeled_RGBs = derriveRGBs(modeled_XYZs', dispModel);
+
+%Rescale values into a 0-100 range
+modeled_RGBs = modeled_RGBs .* (100/255);
+
+%Construct matrix to write to ti1 file for colormunki
+modeled_RGBs = [modeled_RGBs', repmat(0,3,3),repmat(100,3,3)];
+modeled_RGBs = [1:30;modeled_RGBs];
+
+%Write data to file to be parsed by colormunki
+writeTiFile('data/workflow_test_cal.ti1', modeled_RGBs);
 
 
 %% display relevant functions for report
