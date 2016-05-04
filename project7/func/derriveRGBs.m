@@ -15,7 +15,7 @@ function [ result ] = derriveRGBs( XYZs, dispModel )
     adapt_XYZs = adapt_XYZs' - repmat(black_XYZ,adapt_sz(2),1);
 
     %Multiply by matrix to obtain radiometric scalars
-    scalars = adapt_XYZs * dispModel.M_disp;
+    scalars = adapt_XYZs * dispModel.M_disp';
 
     % Normalize scalars by 100
     scalars = scalars/100;

@@ -113,7 +113,7 @@ M_disp = M_rev;
 XYZk = black_XYZ;
 XYZk_disp = XYZk;
 RLUT_disp = RLUT_rev;
-GLUT_disp = GLUT_rev;   
+GLUT_disp = GLUT_rev;
 BLUT_disp = BLUT_rev;
 
 % save the reverse model matrix, reverse LUTs as and black level as 'display_model.mat'
@@ -154,7 +154,7 @@ adapt_XYZs = catBradford(Munki_Patch_XYZs',D50_XYZ, D65_XYZ);
 adapt_XYZs = adapt_XYZs' - repmat(black_XYZ,24,1);
 
 %Multiply by matrix to obtain radiometric scalars
-scalars = adapt_XYZs * M_disp;
+scalars = adapt_XYZs * M_disp';
 
 % Normalize scalars by 100
 scalars = scalars/100;
