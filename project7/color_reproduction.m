@@ -32,6 +32,27 @@ dataReadings = [1:30; dataSet'];
 %Write data to formatted ti1 file
 writeTiFile('data/disp_model_test.ti1', dataReadings);
 
+%Load patch values into workspace
+disp_XYZs = importdata('disp_model_test.ti3',' ',20); 
+
+%Extract XYZ value for measured patches
+munki_patch_XYZs = disp_XYZs.data(1:24,5:7);
+
+%Generate averages of XYZ black and white values
+disp_black = mean(disp_XYZs.data(25:27,5:7));
+disp_white = mean(disp_XYZs.data(28:30,5:7));
+
+display_labs = XYZ2Lab(munki_patch_XYZs',disp_white)';
+
+%Generate delta EAB values for display vs colormunki readings
+display_deltas = deltaEab(display_labs', munkiLABs');
+
+%Construct display table of LAB values
+step1_table = [munkiLABs, display_labs, display_deltas'];
+step1_table = ([1:24; step1_table'])';
+
+csvwrite('data/step1_out.csv', step1_table);
+
 %% Uncalibrated color imaging workflow
 
 %Fetch average RGBs of chart from project 5
@@ -47,6 +68,26 @@ dataSet = [1:30;dataSet];
 
 %Write data to formatted ti1 file
 writeTiFile('data/workflow_test_uncal.ti1', dataReadings);
+
+uncal_XYZs = importdata('workflow_test_uncal.ti3',' ',20);
+
+%Extract XYZ value for measured patches
+munki_patch_XYZs = uncal_XYZs.data(1:24,5:7);
+
+%Generate averages of XYZ black and white values
+disp_black = mean(uncal_XYZs.data(25:27,5:7));
+disp_white = mean(uncal_XYZs.data(28:30,5:7));
+
+display_labs = XYZ2Lab(munki_patch_XYZs',disp_white)';
+
+%Generate delta EAB values for display vs colormunki readings
+display_deltas = deltaEab(display_labs', munkiLABs');
+
+%Construct display table of LAB values
+step2_table = [munkiLABs, display_labs, display_deltas'];
+step2_table = ([1:24; step2_table'])';
+
+csvwrite('data/step2_out.csv', step2_table);
 
 %% Find errors in color imaging workflow
 
@@ -92,6 +133,25 @@ modeled_RGBs = [1:30;modeled_RGBs];
 %Write data to file to be parsed by colormunki
 writeTiFile('data/workflow_test_cal.ti1', modeled_RGBs);
 
+cal_XYZs = importdata('workflow_test_cal.ti3',' ',20); 
+
+%Extract XYZ value for measured patches
+munki_patch_XYZs = cal_XYZs.data(1:24,5:7);
+
+%Generate averages of XYZ black and white values
+disp_black = mean(cal_XYZs.data(25:27,5:7));
+disp_white = mean(cal_XYZs.data(28:30,5:7));
+
+display_labs = XYZ2Lab(munki_patch_XYZs',disp_white)';
+
+%Generate delta EAB values for display vs colormunki readings
+display_deltas = deltaEab(display_labs', munkiLABs');
+
+%Construct display table of LAB values
+step3_table = [munkiLABs, display_labs, display_deltas'];
+step3_table = ([1:24; step3_table'])';
+
+csvwrite('data/step3_out.csv', step3_table);
 
 %% display relevant functions for report
 dbtype('writeTiFile.m');
