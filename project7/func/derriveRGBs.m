@@ -11,7 +11,8 @@ function [ result ] = derriveRGBs( XYZs, dispModel )
     adapt_XYZs = catBradford(XYZs',D50_XYZ, D65_XYZ);
 
     % Subtract XYZ black from each adapted value
-    adapt_XYZs = adapt_XYZs' - repmat(black_XYZ,24,1);
+    adapt_sz = size(adapt_XYZs);
+    adapt_XYZs = adapt_XYZs' - repmat(black_XYZ,adapt_sz(2),1);
 
     %Multiply by matrix to obtain radiometric scalars
     scalars = adapt_XYZs * dispModel.M_disp;

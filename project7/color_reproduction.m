@@ -89,7 +89,7 @@ step2_table = ([1:24; step2_table'])';
 
 csvwrite('data/step2_out.csv', step2_table);
 
-%% Find errors in color imaging workflow
+%% Find errors in calibrated color imaging workflow
 
 %Estimate XYZs of patches via camera model
 
@@ -120,7 +120,7 @@ D50_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD50);
 D65_XYZ = ref2XYZ(cie.illE, cie.cmf2deg, cie.illD65);
 modeled_XYZs = catBradford(modeled_XYZs, D50_XYZ, D65_XYZ);
 
-%Pass new XYZs through display model to convert back to XYZs
+%Pass new XYZs through display model to convert back to RGBs
 modeled_RGBs = derriveRGBs(modeled_XYZs', dispModel);
 
 %Rescale values into a 0-100 range
@@ -152,6 +152,35 @@ step3_table = [munkiLABs, display_labs, display_deltas'];
 step3_table = ([1:24; step3_table'])';
 
 csvwrite('data/step3_out.csv', step3_table);
+
+%% Color Accurate Imaging - Colorchecker Chart Image
+chartImg = importdata('chart.jpg');
+chartSize = size(chartImg);
+img_LUT_Results = zeros(chartSize(1), chartSize(2), chartSize(3));
+
+% push the DCs through the forward LUTs to predict radiometric scalars
+for i=1:800
+    for j=1:1125
+        img_LUT_Results(i,j,1) = RLUT_fwd(chartImg(i,j,1)+1);
+        img_LUT_Results(i,j,2) = GLUT_fwd(chartImg(i,j,2)+1);
+        img_LUT_Results(i,j,3) = BLUT_fwd(chartImg(i,j,3)+1);
+    end
+end
+
+%squash image matrix into a single column for processing
+img_LUT_Results = reshape(img_LUT_Results, [800 * 1125,3]);
+
+% add the homogeneous coordinate required to apply the forward matrix
+img_RSs_h = [img_LUT_Results'; ones(1,size(img_LUT_Results',2))];
+
+% apply the forward matrix to the RSs to calculate model-predicted XYZs 
+img_modeled_XYZs = M_fwd * img_RSs_h * 100;
+
+%Convert XYZ values through model back to RGB
+img_RGB_Results = derriveRGBs(img_modeled_XYZs', dispModel);
+
+%Bring image shape back to three dimensions
+img_RGB_Results = reshape(img_RGB_Results, [800, 1125, 3]);
 
 %% display relevant functions for report
 dbtype('writeTiFile.m');
