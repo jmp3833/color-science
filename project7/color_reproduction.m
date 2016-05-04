@@ -182,6 +182,8 @@ img_RGB_Results = derriveRGBs(img_modeled_XYZs', dispModel);
 %Bring image shape back to three dimensions
 img_RGB_Results = reshape(img_RGB_Results, [800, 1125, 3]);
 
+imwrite(img_RGB_Results, 'img/result.jpg');
+
 %% display relevant functions for report
 dbtype('writeTiFile.m');
 dbtype('derriveRGBs.m');
