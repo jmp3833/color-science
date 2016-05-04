@@ -1,0 +1,24 @@
+Dark Skin
+Light Skin
+Blue Sky
+Foliage
+Blue Flower
+Bluish Green
+Orange
+Purplish Blue
+Moderate Red
+Purple
+Yellow Green
+Orange Yellow
+Blue
+Green
+Red
+Yellow
+Magenta
+Cyan
+White
+Neutral 8
+Neutral  6.5
+Neutral 5
+Neutral 3.5
+Black
