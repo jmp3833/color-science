@@ -51,6 +51,9 @@ display_deltas = deltaEab(display_labs', munkiLABs');
 step1_table = [munkiLABs, display_labs, display_deltas'];
 step1_table = ([1:24; step1_table'])';
 
+fprintf('step1_table:\n');
+disp(step1_table);
+
 csvwrite('data/step1_out.csv', step1_table);
 
 %% Uncalibrated color imaging workflow
@@ -86,6 +89,9 @@ display_deltas = deltaEab(display_labs', munkiLABs');
 %Construct display table of LAB values
 step2_table = [munkiLABs, display_labs, display_deltas'];
 step2_table = ([1:24; step2_table'])';
+
+fprintf('step2_table:\n');
+disp(step2_table);
 
 csvwrite('data/step2_out.csv', step2_table);
 
@@ -150,6 +156,9 @@ display_deltas = deltaEab(display_labs', munkiLABs');
 %Construct display table of LAB values
 step3_table = [munkiLABs, display_labs, display_deltas'];
 step3_table = ([1:24; step3_table'])';
+
+fprintf('step3_table:\n');
+disp(step3_table);
 
 csvwrite('data/step3_out.csv', step3_table);
 
