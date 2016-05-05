@@ -7,7 +7,7 @@ colorMunkiData = importdata('munki_CC_XYZs_Labs.txt');
 munkiXYZs = colorMunkiData(:,2:4);
 munkiLABs = colorMunkiData(:,5:7);
 
-cam_RGBs = importdata('cam_rgbs.mat');
+cam_RGBs = importdata('new_rgbs.mat')';
 
 dispModel = importdata('display_model.mat');
 
